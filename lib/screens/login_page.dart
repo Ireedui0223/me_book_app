@@ -25,15 +25,26 @@ class LoginScreenContent extends StatelessWidget {
     return Scaffold(
       appBar:
           appBar(leading: btnAction(icon: Icons.arrow_back, onPressed: () {})),
-      body: LoginInterface(),
+      body: const LoginInterface(),
     );
   }
 }
 
-class LoginInterface extends StatelessWidget {
-  LoginInterface({super.key});
+class LoginInterface extends StatefulWidget {
+  const LoginInterface({super.key});
 
+  @override
+  State<LoginInterface> createState() => _LoginInterfaceState();
+}
+
+class _LoginInterfaceState extends State<LoginInterface> {
   final _formKey = GlobalKey<FormState>();
+  bool submit = false;
+
+  void subData(context) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text("loading")));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +52,8 @@ class LoginInterface extends StatelessWidget {
       padding: const EdgeInsets.only(left: 24, right: 24),
       child: Form(
         key: _formKey,
+        onChanged: () =>
+            setState(() => submit = _formKey.currentState!.validate()),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -60,6 +73,7 @@ class LoginInterface extends StatelessWidget {
                     return "Invalid input";
                   }
                 },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
                   label: const Text("Email"),
                   enabledBorder: OutlineInputBorder(
@@ -90,6 +104,7 @@ class LoginInterface extends StatelessWidget {
                     return "Invalid input";
                   }
                 },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
                   isDense: true,
                   label: const Text("password"),
@@ -113,48 +128,19 @@ class LoginInterface extends StatelessWidget {
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(const SnackBar(content: Text("loading")));
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(40),
-                  backgroundColor: AppColors.primary),
-              child: const Text("Submit"),
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: ElevatedButton(
+                onPressed: submit ? () => subData(context) : null,
+                style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(40),
+                    backgroundColor: AppColors.primary),
+                child: const Text("Continue"),
+              ),
             ),
           ],
         ),
       ),
     );
-    // return Container(
-    //   padding: const EdgeInsets.only(
-    //     left: 24.0,
-    //     right: 24.0,
-    //   ),
-    //   child: Center(
-    //     child: Form(
-    //       key: _formKey,
-    //       child: const Column(
-    //         children: [
-    //           Text(
-    //             "login",
-    //             style: TextStyle(
-    //                 fontWeight: FontWeight.w600, fontSize: 24, height: 32),
-    //           ),
-    //           TextField(
-    //             decoration: InputDecoration(
-    //               border: OutlineInputBorder(),
-    //               labelText: "Email",
-    //               hintText: "Email",
-    //             ),
-    //           )
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }
